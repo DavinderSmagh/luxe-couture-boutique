@@ -7,7 +7,10 @@ import Products from './components/Products';
 import Collections from './components/Collections';
 import About from './components/About';
 import Cart from './components/Cart';
-import Footer from './components/Footer';   // ← added this
+import Footer from './components/Footer';
+import Checkout from './pages/Checkout';
+import PlaceOrder from './pages/PlaceOrder';
+import OrderSuccess from './pages/OrderSuccess';
 
 function App() {
   useEffect(() => {
@@ -25,6 +28,9 @@ function App() {
         <Route path="/collections" element={<Collections />} />
         <Route path="/about" element={<About />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/placeorder" element={<PlaceOrder />} />
+        <Route path="/order/:id" element={<OrderSuccess />} />
       </Routes>
       <Footer />   
     </Router>

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import axios from 'axios';
+import { useCart } from '../context/CartContext';
 
 const Section = styled.section`
   padding: 120px 5% 80px;
@@ -83,12 +84,23 @@ const Button = styled.button`
 
 export default function Products() {
   const [products, setProducts] = useState([]);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     axios.get('http://localhost:5000/api/products')
       .then(res => setProducts(res.data))
       .catch(err => console.error('Fetch error:', err));
   }, []);
+
+  const addToCartHandler = (product) => {
+    addToCart({
+      product: product._id,
+      name: product.name,
+      image: product.images[0],
+      price: product.price,
+      qty: 1
+    });
+  };
 
   return (
     <Section>
@@ -106,7 +118,7 @@ export default function Products() {
             <Info>
               <Name>{product.name}</Name>
               <Price>₹{product.price.toLocaleString('en-IN')}</Price>
-              <Button>Add to Cart</Button>
+              <Button onClick={() => addToCartHandler(product)}>Add to Cart</Button>
             </Info>
           </Card>
         ))}

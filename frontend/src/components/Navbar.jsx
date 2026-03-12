@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const Nav = styled.nav`
   position: fixed;
@@ -67,7 +68,8 @@ const CartIcon = styled(Link)`
 `;
 
 export default function Navbar() {
-    // const [cartCount] = useState(0); // connect later
+    const { state: { cartItems } } = useCart();
+    const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
 
     return (
         <Nav>
@@ -79,7 +81,7 @@ export default function Navbar() {
             </NavLinks>
             <CartIcon to="/cart">
                 <ShoppingBag size={24} />
-                {/* {cartCount > 0 && <span className="cart-count">{cartCount}</span>} */}
+                {cartCount > 0 && <span style={{ position: 'absolute', top: -8, right: -12, background: '#d4af37', color: '#000', fontSize: '12px', padding: '2px 6px', borderRadius: '50%', fontWeight: 'bold' }}>{cartCount}</span>}
             </CartIcon>
         </Nav>
     );

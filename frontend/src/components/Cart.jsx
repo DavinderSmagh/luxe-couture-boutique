@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
+import { X, Plus, Minus, ShoppingBag, Trash2 } from 'lucide-react';
+import { useCart } from '../context/CartContext';
 
 // Styled Components
 const Overlay = styled(motion.div)`
@@ -156,10 +157,22 @@ const CheckoutBtn = styled.button`
   }
 `;
 
+const RemoveBtn = styled.button`
+  background: none;
+  border: none;
+  color: #ff4d4d;
+  cursor: pointer;
+  margin-top: 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 14px;
+`;
+
 // Cart Component
 export default function Cart() {
-  const [cartItems, setCartItems] = useState([]); // Later: useContext or Redux
-  const [isOpen, setIsOpen] = useState(true); // For demo — normally controlled by route or context
+  const { state: { cartItems }, addToCart, removeFromCart } = useCart();
+  const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
   const drawerRef = useRef(null);
 
@@ -175,37 +188,24 @@ export default function Cart() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [isOpen, navigate]);
 
-  // Demo: Add some fake items if empty (remove later when real cart logic added)
-  useEffect(() => {
-    if (cartItems.length === 0) {
-      setCartItems([
-        {
-          id: '1',
-          name: 'Midnight Silk Dress',
-          price: 8999,
-          quantity: 1,
-          image: 'https://picsum.photos/id/1015/600/800',
-        },
-        {
-          id: '2',
-          name: 'Ember Oversized Blazer',
-          price: 6499,
-          quantity: 2,
-          image: 'https://picsum.photos/id/1060/600/800',
-        },
-      ]);
+  const updateQuantity = (item, qty) => {
+    if (qty > 0) {
+      addToCart({ ...item, qty });
+    } else {
+      removeFromCart(item.product);
     }
-  }, []);
-
-  const updateQuantity = (id, delta) => {
-    setCartItems((prev) =>
-      prev.map((item) =>
-        item.id === id ? { ...item, quantity: Math.max(1, item.quantity + delta) } : item
-      )
-    );
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const removeItem = (id) => {
+    removeFromCart(id);
+  };
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
+
+  const checkoutHandler = () => {
+    setIsOpen(false);
+    setTimeout(() => navigate('/checkout'), 300);
+  };
 
   return (
     <AnimatePresence>
@@ -242,7 +242,7 @@ export default function Cart() {
                 </EmptyState>
               ) : (
                 cartItems.map((item) => (
-                  <Item key={item.id}>
+                  <Item key={item.product}>
                     <img src={item.image} alt={item.name} />
                     <ItemInfo>
                       <div>
@@ -250,14 +250,17 @@ export default function Cart() {
                         <ItemPrice>₹{item.price.toLocaleString()}</ItemPrice>
                       </div>
                       <Quantity>
-                        <button onClick={() => updateQuantity(item.id, -1)}>
+                        <button onClick={() => updateQuantity(item, item.qty - 1)}>
                           <Minus size={16} />
                         </button>
-                        <span>{item.quantity}</span>
-                        <button onClick={() => updateQuantity(item.id, 1)}>
+                        <span>{item.qty}</span>
+                        <button onClick={() => updateQuantity(item, item.qty + 1)}>
                           <Plus size={16} />
                         </button>
                       </Quantity>
+                      <RemoveBtn onClick={() => removeItem(item.product)}>
+                        <Trash2 size={16} /> Remove
+                      </RemoveBtn>
                     </ItemInfo>
                   </Item>
                 ))
@@ -270,7 +273,7 @@ export default function Cart() {
                   <span>Subtotal</span>
                   <span>₹{subtotal.toLocaleString()}</span>
                 </Subtotal>
-                <CheckoutBtn>Proceed to Checkout</CheckoutBtn>
+                <CheckoutBtn onClick={checkoutHandler}>Proceed to Checkout</CheckoutBtn>
               </Footer>
             )}
           </Drawer>

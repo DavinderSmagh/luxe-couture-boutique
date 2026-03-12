@@ -1,24 +1,24 @@
 {
-  "name": "backend",
+  "name": "luxe-couture-backend",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Backend for Luxe Couture boutique",
+  "main": "server.js",
   "scripts": {
-  "dev": "nodemon server.js",
   "start": "node server.js",
-  "seed": "node seeder.js"
+  "dev": "nodemon server.js",
+  "seed": "node seeder.js",
+  "dev:fake": "FAKE_MODE=true nodemon server.js"
 },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
-    "cors": "^2.8.6",
-    "dotenv": "^17.3.1",
-    "express": "^5.2.1",
-    "mongoose": "^9.2.2"
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0",
+    "mongoose": "^8.7.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.7"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
