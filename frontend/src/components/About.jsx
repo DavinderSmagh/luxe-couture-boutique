@@ -54,30 +54,30 @@ export default function About() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 1 }}
       >
-        <p>At LUXE COUTURE, every piece is hand-designed in our Chandigarh atelier — where tradition meets modern elegance.</p>
+        <p>At HGAMS CREATIONS, every piece is hand-designed in our Chandigarh atelier — where tradition meets modern elegance.</p>
         <p>We believe fashion should tell a story: your story. From luxurious silks to tailored wool blends, each garment is created for the woman who values quality, exclusivity, and effortless sophistication.</p>
         <p>Founded with a passion for timeless design, we source the finest fabrics and pour heart into every stitch. This isn't fast fashion — it's heirloom quality you’ll reach for season after season.</p>
       </Content>
 
       <ImageGrid>
-        <Img 
-          src="https://static.dezeen.com/uploads/2015/12/Cashmere-in-Love_URAStudio_retail_interior_dezeen_936_0.jpg" 
+        <Img
+          src="https://static.dezeen.com/uploads/2015/12/Cashmere-in-Love_URAStudio_retail_interior_dezeen_936_0.jpg"
           alt="Our atelier showcase"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1 }}
           viewport={{ once: true }}
         />
-        <Img 
-          src="https://wonderlandbylilian.com/cdn/shop/files/Xnip2024-10-04_19-29-43.jpg?v=1728095599&width=1080" 
+        <Img
+          src="https://wonderlandbylilian.com/cdn/shop/files/Xnip2024-10-04_19-29-43.jpg?v=1728095599&width=1080"
           alt="Elegant showroom display"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 1 }}
           viewport={{ once: true }}
         />
-        <Img 
-          src="https://designformal.com/cdn/shop/files/Simple_Sexy_Prom_Dresses-DesignFormal.jpg?v=1684247823&width=1800" 
+        <Img
+          src="https://designformal.com/cdn/shop/files/Simple_Sexy_Prom_Dresses-DesignFormal.jpg?v=1684247823&width=1800"
           alt="Handcrafted details"
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
