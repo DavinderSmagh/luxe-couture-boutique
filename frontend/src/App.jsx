@@ -11,10 +11,11 @@ import Footer from './components/Footer';
 import Checkout from './pages/Checkout';
 import PlaceOrder from './pages/PlaceOrder';
 import OrderSuccess from './pages/OrderSuccess';
+import './App.css';
 
 function App() {
   useEffect(() => {
-    const lenis = new Lenis({ duration: 1.6, smoothWheel: true });
+    const lenis = new Lenis({ duration: 1.4, smoothWheel: true });
     function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
     requestAnimationFrame(raf);
     return () => lenis.destroy();
@@ -24,7 +25,13 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path="/" element={<><Hero /><Products /></>} />
+        <Route path="/" element={
+          <>
+            <Hero />
+            <Products />
+            <Collections />
+          </>
+        } />
         <Route path="/collections" element={<Collections />} />
         <Route path="/about" element={<About />} />
         <Route path="/cart" element={<Cart />} />
@@ -32,7 +39,7 @@ function App() {
         <Route path="/placeorder" element={<PlaceOrder />} />
         <Route path="/order/:id" element={<OrderSuccess />} />
       </Routes>
-      <Footer />   
+      <Footer />
     </Router>
   );
 }
