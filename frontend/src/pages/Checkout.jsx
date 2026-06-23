@@ -142,8 +142,9 @@ export default function Checkout() {
   const [city, setCity] = useState(shippingAddress.city || '');
   const [postalCode, setPostalCode] = useState(shippingAddress.postalCode || '');
   const [country, setCountry] = useState(shippingAddress.country || '');
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
+  const [name, setName] = useState(shippingAddress.name || '');
+  const [email, setEmail] = useState(shippingAddress.email || '');
+  const [phone, setPhone] = useState(shippingAddress.phone || '');
 
   const itemsPrice = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
   const shippingPrice = itemsPrice > 10000 ? 0 : 500;
@@ -152,15 +153,14 @@ export default function Checkout() {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    saveShippingAddress({ address, city, postalCode, country });
-    
-    // In a real app, we'd call the backend here.
-    // We'll implement the integration in the next step.
-    navigate('/placeorder', { 
-        state: { 
-            name, 
-            email, 
-            address, 
+    saveShippingAddress({ name, email, phone, address, city, postalCode, country });
+
+    navigate('/placeorder', {
+      state: {
+        name,
+        email,
+        phone,
+        address,
             city, 
             postalCode, 
             country,
@@ -195,6 +195,16 @@ export default function Checkout() {
               value={email} 
               onChange={(e) => setEmail(e.target.value)} 
               required 
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label>Phone Number</Label>
+            <Input
+              type="tel"
+              placeholder="+91 98765 43210"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              required
             />
           </FormGroup>
           <FormGroup>
@@ -244,7 +254,7 @@ export default function Checkout() {
       <OrderSummary>
         <Title style={{ color: '#fff' }}>Order Summary</Title>
         {cartItems.map((item) => (
-          <CartItemRow key={item.product}>
+          <CartItemRow key={item.cartKey || item.product}>
             <img src={item.image} alt={item.name} />
             <ItemInfo>
               <div>{item.name}</div>

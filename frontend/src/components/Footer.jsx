@@ -1,20 +1,23 @@
+import { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
-import { Instagram, Facebook, Twitter, Send, MapPin, Phone, Mail } from 'lucide-react';
+import { Instagram, Facebook, Twitter, Send, MapPin, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { CATEGORIES, getCategoryLink } from '../constants/categories';
 
 const FooterContainer = styled.footer`
   background: #1a1a1a;
   color: #e0ddd8;
   padding: 80px 5% 40px;
+  margin-top: auto;
 `;
 
 const Content = styled.div`
   max-width: 1400px;
   margin: 0 auto;
   display: grid;
-  grid-template-columns: 1.5fr 1fr 1fr 1.3fr;
-  gap: 60px 48px;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 48px;
 
   @media (max-width: 1024px) {
     grid-template-columns: 1fr 1fr;
@@ -30,7 +33,7 @@ const Column = styled.div``;
 
 const Logo = styled.h3`
   font-family: 'Playfair Display', serif;
-  font-size: 26px;
+  font-size: 24px;
   color: #faf9f6;
   margin-bottom: 20px;
   letter-spacing: 3px;
@@ -46,7 +49,7 @@ const Description = styled.p`
 
 const SocialIcons = styled.div`
   display: flex;
-  gap: 16px;
+  gap: 14px;
 
   a {
     width: 40px;
@@ -69,7 +72,7 @@ const SocialIcons = styled.div`
 
 const ColumnTitle = styled.h4`
   font-family: 'Inter', sans-serif;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   color: #faf9f6;
   margin-bottom: 24px;
@@ -81,7 +84,7 @@ const LinksList = styled.ul`
   list-style: none;
 
   li {
-    margin-bottom: 14px;
+    margin-bottom: 12px;
   }
 
   a {
@@ -101,7 +104,7 @@ const ContactItem = styled.div`
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
   color: #999;
   font-size: 14px;
   line-height: 1.6;
@@ -113,52 +116,55 @@ const ContactItem = styled.div`
   }
 `;
 
-const Newsletter = styled.div`
-  margin-top: 8px;
-`;
-
 const InputGroup = styled.div`
   display: flex;
   gap: 0;
+  margin-top: 8px;
+`;
 
-  input {
-    flex: 1;
-    padding: 14px 16px;
-    border: 1px solid #333;
-    border-right: none;
-    border-radius: 4px 0 0 4px;
-    font-size: 14px;
-    background: transparent;
-    color: #faf9f6;
-    outline: none;
-    transition: border-color 0.3s;
+const NewsletterInput = styled.input`
+  flex: 1;
+  padding: 14px 16px;
+  border: 1px solid #333;
+  border-right: none;
+  border-radius: 4px 0 0 4px;
+  font-size: 14px;
+  background: transparent;
+  color: #faf9f6;
+  outline: none;
+  transition: border-color 0.3s;
 
-    &::placeholder {
-      color: #666;
-    }
-
-    &:focus {
-      border-color: #b79447;
-    }
+  &::placeholder {
+    color: #666;
   }
 
-  button {
-    padding: 14px 20px;
-    background: #b79447;
-    color: #1a1a1a;
-    border: 1px solid #b79447;
-    border-radius: 0 4px 4px 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
-    font-weight: 600;
-
-    &:hover {
-      background: #c9a855;
-    }
+  &:focus {
+    border-color: #b79447;
   }
+`;
+
+const SubscribeBtn = styled.button`
+  padding: 14px 20px;
+  background: #b79447;
+  color: #1a1a1a;
+  border: 1px solid #b79447;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+  font-weight: 600;
+
+  &:hover {
+    background: #c9a855;
+  }
+`;
+
+const SuccessText = styled.p`
+  font-size: 13px;
+  color: #b79447;
+  margin-top: 10px;
 `;
 
 const Divider = styled.div`
@@ -181,6 +187,7 @@ const Copyright = styled.p`
 const BottomLinks = styled.div`
   display: flex;
   gap: 24px;
+  flex-wrap: wrap;
 
   a {
     color: #666;
@@ -194,14 +201,21 @@ const BottomLinks = styled.div`
 `;
 
 export default function Footer() {
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e) => {
+    e.preventDefault();
+    setSubscribed(true);
+  };
+
   return (
     <FooterContainer id="footer">
       <Content>
         <Column>
           <Logo>HGAMS CREATIONS</Logo>
           <Description>
-            Timeless elegance, handcrafted with intention.
-            Exclusive designs for the modern woman who values quality and sophistication.
+            Bespoke tailoring, ethnic wear, and everyday essentials for the modern woman.
+            Handcrafted in Punjab with premium fabrics and meticulous attention to detail.
           </Description>
           <SocialIcons>
             <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
@@ -217,58 +231,64 @@ export default function Footer() {
         </Column>
 
         <Column>
-          <ColumnTitle>Quick Links</ColumnTitle>
+          <ColumnTitle>Shop</ColumnTitle>
           <LinksList>
-            <li><Link to="/">Shop All</Link></li>
+            <li><Link to="/shop">All Products</Link></li>
+            {CATEGORIES.map((cat) => (
+              <li key={cat.id}>
+                <Link to={getCategoryLink(cat.name)}>{cat.name}</Link>
+              </li>
+            ))}
             <li><Link to="/collections">Collections</Link></li>
-            <li><Link to="/about">Our Story</Link></li>
-            <li><a href="#">Size Guide</a></li>
-            <li><a href="#">FAQs</a></li>
           </LinksList>
         </Column>
 
         <Column>
           <ColumnTitle>Customer Care</ColumnTitle>
           <LinksList>
-            <li><a href="#">Shipping & Returns</a></li>
-            <li><a href="#">Care Instructions</a></li>
-            <li><a href="#">Privacy Policy</a></li>
-            <li><a href="#">Terms of Service</a></li>
+            <li><Link to="/contact">Contact Us</Link></li>
+            <li><Link to="/policies/size-guide">Size Guide</Link></li>
+            <li><Link to="/policies/faqs">FAQs</Link></li>
+            <li><Link to="/policies/shipping">Shipping & Returns</Link></li>
+            <li><Link to="/policies/care-instructions">Care Instructions</Link></li>
           </LinksList>
         </Column>
 
         <Column>
           <ColumnTitle>Stay Connected</ColumnTitle>
-          <Description style={{ marginBottom: 20 }}>
-            Subscribe for exclusive previews, new arrivals, and special offers.
+          <Description style={{ marginBottom: 16 }}>
+            Subscribe for new arrivals, styling tips, and exclusive offers.
           </Description>
-          <Newsletter>
+          <form onSubmit={handleSubscribe}>
             <InputGroup>
-              <input type="email" placeholder="Your email address" />
-              <button aria-label="Subscribe">
+              <NewsletterInput type="email" placeholder="Your email" required />
+              <SubscribeBtn type="submit" aria-label="Subscribe">
                 <Send size={16} />
-              </button>
+              </SubscribeBtn>
             </InputGroup>
-          </Newsletter>
+            {subscribed && <SuccessText>Thank you for subscribing!</SuccessText>}
+          </form>
           <ContactItem style={{ marginTop: 24 }}>
             <MapPin size={16} />
-            <span>Kotkapura-151204 ,Punjab ,India</span>
+            <span>Kotkapura-151204, Punjab, India</span>
           </ContactItem>
           <ContactItem>
             <Mail size={16} />
             <span>example@hgams.in</span>
           </ContactItem>
+          <ContactItem>
+            <Phone size={16} />
+            <span>+91 98765 43210</span>
+          </ContactItem>
         </Column>
       </Content>
 
       <Divider>
-        <Copyright>
-          © {new Date().getFullYear()} HGAMS CREATIONS. All rights reserved.
-        </Copyright>
+        <Copyright>© {new Date().getFullYear()} HGAMS CREATIONS. All rights reserved.</Copyright>
         <BottomLinks>
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
-          <a href="#">Cookies</a>
+          <Link to="/policies/privacy">Privacy</Link>
+          <Link to="/policies/terms">Terms</Link>
+          <Link to="/policies/cookies">Cookies</Link>
         </BottomLinks>
       </Divider>
     </FooterContainer>

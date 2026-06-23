@@ -54,8 +54,8 @@ export default function About() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.4, duration: 1 }}
       >
-        <p>At HGAMS CREATIONS, every piece is hand-designed in our Chandigarh atelier — where tradition meets modern elegance.</p>
-        <p>We believe fashion should tell a story: your story. From luxurious silks to tailored wool blends, each garment is created for the woman who values quality, exclusivity, and effortless sophistication.</p>
+        <p>At HGAMS CREATIONS, every piece is hand-designed in our Punjab atelier — where tradition meets modern elegance.</p>
+        <p>From bespoke suits and handcrafted kurtas to everyday essentials, we create fashion for the modern woman who values quality, exclusivity, and effortless sophistication.</p>
         <p>Founded with a passion for timeless design, we source the finest fabrics and pour heart into every stitch. This isn't fast fashion — it's heirloom quality you’ll reach for season after season.</p>
       </Content>
 

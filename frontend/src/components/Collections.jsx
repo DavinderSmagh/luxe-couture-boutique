@@ -2,14 +2,15 @@ import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
+import { CATEGORIES, getCategoryLink } from '../constants/categories';
 
 const Section = styled.section`
-  padding: 120px 5% 100px;
+  padding: ${(p) => (p.$compact ? '60px 5% 80px' : '120px 5% 100px')};
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: 72px;
+  margin-bottom: ${(p) => (p.$compact ? '48px' : '72px')};
 `;
 
 const Eyebrow = styled.span`
@@ -23,7 +24,7 @@ const Eyebrow = styled.span`
 `;
 
 const Title = styled.h2`
-  font-size: clamp(36px, 6vw, 56px);
+  font-size: clamp(32px, 5vw, 48px);
   color: #1a1a1a;
   font-weight: 500;
   margin-bottom: 16px;
@@ -32,20 +33,20 @@ const Title = styled.h2`
 const Subtitle = styled.p`
   font-size: 16px;
   color: #888;
-  max-width: 500px;
+  max-width: 520px;
   margin: 0 auto;
   line-height: 1.7;
 `;
 
 const Categories = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(${(p) => p.$count || 3}, 1fr);
   gap: 24px;
   max-width: 1400px;
   margin: 0 auto;
 
   @media (max-width: 1024px) {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, 1fr);
   }
 
   @media (max-width: 640px) {
@@ -55,7 +56,7 @@ const Categories = styled.div`
 
 const CategoryCard = styled(motion.div)`
   position: relative;
-  height: 520px;
+  height: ${(p) => (p.$compact ? '400px' : '520px')};
   border-radius: 12px;
   overflow: hidden;
   cursor: pointer;
@@ -75,36 +76,33 @@ const CategoryCard = styled(motion.div)`
 const CardOverlay = styled.div`
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0) 30%,
-    rgba(0, 0, 0, 0.65) 100%
-  );
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 30%, rgba(0, 0, 0, 0.7) 100%);
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  padding: 40px 32px;
+  padding: 36px 28px;
   transition: background 0.4s ease;
 
   ${CategoryCard}:hover & {
-    background: linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0) 20%,
-      rgba(0, 0, 0, 0.75) 100%
-    );
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0) 15%, rgba(0, 0, 0, 0.8) 100%);
   }
 `;
 
 const CardTitle = styled.h3`
-  font-size: 28px;
+  font-size: 24px;
   color: #fff;
   font-weight: 500;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
+  margin-bottom: 6px;
+`;
+
+const CardDesc = styled.p`
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 12px;
 `;
 
 const CardLink = styled(Link)`
-  font-size: 13px;
+  font-size: 12px;
   color: #b79447;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -119,51 +117,43 @@ const CardLink = styled(Link)`
   }
 `;
 
-export default function Collections() {
-  const categories = [
-    {
-      name: 'Handmade Dresses',
-      description: 'Crafted with love',
-      img: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80',
-      link: '/?category=Handmade+Dresses'
-    },
-    {
-      name: "Women's Essentials",
-      description: 'Everyday luxury',
-      img: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=800&q=80',
-      link: "/?category=Women's+Essentials"
-    },
-    {
-      name: 'New Arrivals',
-      description: 'Fresh from the atelier',
-      img: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800&q=80',
-      link: '/'
-    },
-  ];
+export default function Collections({ compact = false }) {
+  const items = compact ? CATEGORIES.slice(0, 3) : CATEGORIES;
 
   return (
-    <Section id="collections-section">
-      <SectionHeader>
-        <Eyebrow>Curated for You</Eyebrow>
-        <Title>Our Collections</Title>
-        <Subtitle>
-          Explore our handpicked categories of timeless fashion and essential accessories.
-        </Subtitle>
-      </SectionHeader>
+    <Section id="collections-section" $compact={compact}>
+      {!compact && (
+        <SectionHeader>
+          <Eyebrow>Curated for You</Eyebrow>
+          <Title>Our Collections</Title>
+          <Subtitle>
+            From bespoke suits to everyday essentials — explore every category of handcrafted fashion.
+          </Subtitle>
+        </SectionHeader>
+      )}
 
-      <Categories>
-        {categories.map((cat, i) => (
+      {compact && (
+        <SectionHeader $compact>
+          <Eyebrow>Explore More</Eyebrow>
+          <Title>Shop by Collection</Title>
+        </SectionHeader>
+      )}
+
+      <Categories $count={items.length}>
+        {items.map((cat, i) => (
           <CategoryCard
-            key={cat.name}
+            key={cat.id}
+            $compact={compact}
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.15, duration: 0.7, ease: "easeOut" }}
-            viewport={{ once: true, margin: "-50px" }}
+            transition={{ delay: i * 0.12, duration: 0.7, ease: 'easeOut' }}
+            viewport={{ once: true, margin: '-50px' }}
           >
-            <img src={cat.img} alt={cat.name} loading="lazy" />
+            <img src={cat.image} alt={cat.name} loading="lazy" />
             <CardOverlay>
               <CardTitle>{cat.name}</CardTitle>
-              <CardLink to={cat.link}>
+              <CardDesc>{cat.description}</CardDesc>
+              <CardLink to={getCategoryLink(cat.name)}>
                 Explore <ArrowRight size={16} />
               </CardLink>
             </CardOverlay>

@@ -271,8 +271,14 @@ const ContinueShopping = styled.button`
 
 /* ─── CART COMPONENT ─────────────────────────────────── */
 
+const Variant = styled.p`
+  font-size: 12px;
+  color: #999;
+  margin-top: 2px;
+`;
+
 export default function Cart() {
-  const { state: { cartItems }, addToCart, removeFromCart } = useCart();
+  const { state: { cartItems }, updateQty, removeFromCart } = useCart();
   const [isOpen, setIsOpen] = useState(true);
   const navigate = useNavigate();
   const drawerRef = useRef(null);
@@ -294,11 +300,7 @@ export default function Cart() {
   };
 
   const updateQuantity = (item, qty) => {
-    if (qty > 0) {
-      addToCart({ ...item, qty });
-    } else {
-      removeFromCart(item.product);
-    }
+    updateQty(item.cartKey, qty);
   };
 
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
@@ -346,7 +348,7 @@ export default function Cart() {
                 <AnimatePresence initial={false}>
                   {cartItems.map((item) => (
                     <Item
-                      key={item.product}
+                      key={item.cartKey}
                       layout
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
@@ -357,6 +359,11 @@ export default function Cart() {
                       <ItemInfo>
                         <div>
                           <ItemName>{item.name}</ItemName>
+                          {(item.size || item.color) && (
+                            <Variant>
+                              {item.size}{item.color ? ` · ${item.color}` : ''}
+                            </Variant>
+                          )}
                           <ItemPrice>₹{item.price.toLocaleString('en-IN')}</ItemPrice>
                         </div>
                         <div>
@@ -369,7 +376,7 @@ export default function Cart() {
                               <Plus size={14} />
                             </button>
                           </Quantity>
-                          <RemoveBtn onClick={() => removeFromCart(item.product)} aria-label="Remove item">
+                          <RemoveBtn onClick={() => removeFromCart(item.cartKey)} aria-label="Remove item">
                             <Trash2 size={13} /> Remove
                           </RemoveBtn>
                         </div>

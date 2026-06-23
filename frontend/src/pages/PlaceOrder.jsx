@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { useCart } from '../context/CartContext';
 import axios from 'axios';
+import { apiEndpoint } from '../config/api';
 
 const Container = styled.div`
   max-width: 1000px;
@@ -115,8 +116,9 @@ export default function PlaceOrder() {
     try {
       const orderData = {
         user: {
-            name: checkoutInfo.name,
-            email: checkoutInfo.email
+          name: checkoutInfo.name,
+          email: checkoutInfo.email,
+          phone: checkoutInfo.phone,
         },
         orderItems: cartItems.map(item => ({
             name: item.name,
@@ -138,7 +140,7 @@ export default function PlaceOrder() {
         totalPrice: checkoutInfo.totalPrice,
       };
 
-      const { data } = await axios.post('http://localhost:5000/api/orders', orderData);
+      const { data } = await axios.post(apiEndpoint('/api/orders'), orderData);
       
       clearCart();
       navigate(`/order/${data._id}`);
@@ -157,6 +159,7 @@ export default function PlaceOrder() {
             <h3>Shipping Address</h3>
             <p>
               {checkoutInfo.name} ({checkoutInfo.email})<br />
+              {checkoutInfo.phone && `${checkoutInfo.phone} · `}
               {checkoutInfo.address}, {checkoutInfo.city}<br />
               {checkoutInfo.postalCode}, {checkoutInfo.country}
             </p>
@@ -170,7 +173,7 @@ export default function PlaceOrder() {
           <InfoBox>
             <h3>Order Items</h3>
             {cartItems.map((item) => (
-              <ItemRow key={item.product}>
+              <ItemRow key={item.cartKey || item.product}>
                 <img src={item.image} alt={item.name} />
                 <div style={{ flex: 1 }}>
                   <div style={{ fontWeight: 600 }}>{item.name}</div>

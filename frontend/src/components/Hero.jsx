@@ -19,7 +19,7 @@ const BgImage = styled(motion.div)`
   position: absolute;
   inset: 0;
   background: url('https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=1920&q=80') center/cover no-repeat;
-  opacity: 0.5;
+  opacity: 0.45;
 `;
 
 const Content = styled(motion.div)`
@@ -43,8 +43,8 @@ const Eyebrow = styled(motion.span)`
 `;
 
 const Heading = styled(motion.h1)`
-  font-size: clamp(42px, 8vw, 88px);
-  line-height: 1.05;
+  font-size: clamp(38px, 7vw, 80px);
+  line-height: 1.08;
   margin-bottom: 28px;
   color: #faf9f6;
   font-weight: 500;
@@ -58,7 +58,7 @@ const Heading = styled(motion.h1)`
 const Subtitle = styled(motion.p)`
   font-size: clamp(15px, 2vw, 18px);
   color: rgba(250, 249, 246, 0.65);
-  max-width: 560px;
+  max-width: 580px;
   margin-bottom: 44px;
   line-height: 1.7;
   font-weight: 300;
@@ -74,13 +74,11 @@ const CTAGroup = styled(motion.div)`
 const PrimaryBtn = styled(Link)`
   background: #faf9f6;
   color: #1a1a1a;
-  border: none;
   padding: 16px 44px;
   font-size: 12px;
   font-weight: 600;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  cursor: pointer;
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   display: inline-block;
 
@@ -101,7 +99,6 @@ const SecondaryBtn = styled(Link)`
   font-weight: 500;
   letter-spacing: 2.5px;
   text-transform: uppercase;
-  cursor: pointer;
   transition: all 0.4s ease;
   display: inline-block;
 
@@ -130,13 +127,13 @@ const ScrollIndicator = styled(motion.div)`
 
 export default function Hero() {
   const ref = useRef(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
   const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '25%']);
   const contentY = useTransform(scrollYProgress, [0, 1], ['0%', '15%']);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
 
-  const scrollToProducts = () => {
-    const el = document.getElementById('products-section');
+  const scrollToCategories = () => {
+    const el = document.getElementById('categories-section');
     if (el) el.scrollIntoView({ behavior: 'smooth' });
   };
 
@@ -150,15 +147,16 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.2 }}
         >
-          Handcrafted with Intention
+          Handcrafted in Punjab
         </Eyebrow>
 
         <Heading
           initial={{ opacity: 0, y: 40 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.2, delay: 0.4, ease: "easeOut" }}
+          transition={{ duration: 1.2, delay: 0.4, ease: 'easeOut' }}
         >
-          Handmade Dresses &<br /><span>Women's Essentials</span>
+          Custom Suits, Kurtas &<br />
+          <span>Women's Essentials</span>
         </Heading>
 
         <Subtitle
@@ -166,8 +164,8 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
         >
-          Timeless elegance for the modern woman. Each piece is carefully handcrafted 
-          in our atelier with premium fabrics and meticulous attention to detail.
+          Bespoke tailoring and handcrafted fashion for every occasion. From made-to-measure suits
+          to everyday essentials — quality you can feel.
         </Subtitle>
 
         <CTAGroup
@@ -175,8 +173,8 @@ export default function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1.1 }}
         >
-          <PrimaryBtn to="/collections">Shop Collections</PrimaryBtn>
-          <SecondaryBtn to="/about">Our Story</SecondaryBtn>
+          <PrimaryBtn to="/shop">Shop Now</PrimaryBtn>
+          <SecondaryBtn to="/collections">View Collections</SecondaryBtn>
         </CTAGroup>
       </Content>
 
@@ -184,12 +182,12 @@ export default function Hero() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 2 }}
-        onClick={scrollToProducts}
+        onClick={scrollToCategories}
       >
-        <span>Scroll</span>
+        <span>Explore</span>
         <motion.div
           animate={{ y: [0, 6, 0] }}
-          transition={{ repeat: Infinity, duration: 1.8, ease: "easeInOut" }}
+          transition={{ repeat: Infinity, duration: 1.8, ease: 'easeInOut' }}
         >
           <ArrowDown size={18} strokeWidth={1.5} />
         </motion.div>

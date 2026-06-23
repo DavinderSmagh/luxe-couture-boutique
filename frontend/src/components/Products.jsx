@@ -1,20 +1,23 @@
 import { useEffect, useState, useCallback } from 'react';
-import styled, { keyframes, css } from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-import { ShoppingBag, Check, Eye } from 'lucide-react';
-import { useSearchParams } from 'react-router-dom';
+import { ShoppingBag, Check, Eye, ArrowRight } from 'lucide-react';
+import { apiEndpoint } from '../config/api';
+import { CATEGORY_NAMES } from '../constants/categories';
+import { COLOR_MAP, fallbackProducts } from '../data/products';
 
 const Section = styled.section`
-  padding: 100px 5% 100px;
+  padding: ${(p) => (p.$featured ? '80px 5% 60px' : '100px 5% 100px')};
   max-width: 1400px;
   margin: 0 auto;
 `;
 
 const SectionHeader = styled.div`
   text-align: center;
-  margin-bottom: 56px;
+  margin-bottom: 48px;
 `;
 
 const Eyebrow = styled.span`
@@ -28,55 +31,65 @@ const Eyebrow = styled.span`
 `;
 
 const Title = styled.h2`
-  font-size: clamp(36px, 6vw, 56px);
+  font-size: clamp(32px, 5vw, 48px);
   color: #1a1a1a;
   font-weight: 500;
-  margin-bottom: 16px;
+  margin-bottom: 12px;
+`;
+
+const ViewAllLink = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 48px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #b79447;
+  transition: gap 0.3s;
+
+  &:hover {
+    gap: 14px;
+  }
 `;
 
 const FilterTabs = styled.div`
   display: flex;
   justify-content: center;
   gap: 8px;
-  margin-bottom: 56px;
+  margin-bottom: 48px;
   flex-wrap: wrap;
 `;
 
 const Tab = styled.button`
-  padding: 10px 28px;
-  border: 1.5px solid ${props => props.$active ? '#1a1a1a' : '#ddd'};
-  background: ${props => props.$active ? '#1a1a1a' : 'transparent'};
-  color: ${props => props.$active ? '#faf9f6' : '#777'};
-  font-size: 12px;
+  padding: 10px 24px;
+  border: 1.5px solid ${(p) => (p.$active ? '#1a1a1a' : '#ddd')};
+  background: ${(p) => (p.$active ? '#1a1a1a' : 'transparent')};
+  color: ${(p) => (p.$active ? '#faf9f6' : '#777')};
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
   cursor: pointer;
   transition: all 0.3s ease;
-  border-radius: 2px;
+  border-radius: 100px;
 
   &:hover {
     border-color: #1a1a1a;
-    color: ${props => props.$active ? '#faf9f6' : '#1a1a1a'};
   }
 `;
 
 const Grid = styled.div`
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 32px;
-
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 28px;
 `;
 
 const Card = styled(motion.div)`
   background: #fff;
   overflow: hidden;
-  border-radius: 8px;
-  cursor: pointer;
+  border-radius: 12px;
   position: relative;
   transition: box-shadow 0.4s ease;
 
@@ -85,10 +98,11 @@ const Card = styled(motion.div)`
   }
 `;
 
-const ImageWrapper = styled.div`
+const ImageLink = styled(Link)`
+  display: block;
   position: relative;
   overflow: hidden;
-  height: 420px;
+  height: ${(p) => (p.$featured ? '360px' : '400px')};
 
   img {
     width: 100%;
@@ -115,7 +129,7 @@ const ActionBtn = styled.button`
   flex: 1;
   padding: 12px;
   border: none;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -123,20 +137,31 @@ const ActionBtn = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
+  border-radius: 6px;
+  background: #1a1a1a;
+  color: #faf9f6;
   transition: all 0.3s;
-  border-radius: 4px;
 
-  ${props => props.$primary ? `
-    background: #1a1a1a;
-    color: #faf9f6;
-    &:hover { background: #333; }
-  ` : `
-    background: rgba(255,255,255,0.95);
-    color: #1a1a1a;
-    backdrop-filter: blur(10px);
-    &:hover { background: #fff; }
-  `}
+  &:hover {
+    background: #333;
+  }
+`;
+
+const ViewBtn = styled(Link)`
+  flex: 1;
+  padding: 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.95);
+  color: #1a1a1a;
 `;
 
 const CategoryBadge = styled.span`
@@ -145,26 +170,31 @@ const CategoryBadge = styled.span`
   left: 16px;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(8px);
-  padding: 6px 14px;
+  padding: 6px 12px;
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 1px;
   text-transform: uppercase;
   color: #555;
-  border-radius: 2px;
+  border-radius: 100px;
   z-index: 2;
 `;
 
 const Info = styled.div`
-  padding: 20px 4px;
+  padding: 18px 6px;
 `;
 
-const ProductName = styled.h3`
+const ProductName = styled(Link)`
   font-family: 'Playfair Display', serif;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 500;
   margin-bottom: 6px;
   color: #1a1a1a;
+  display: block;
+
+  &:hover {
+    color: #b79447;
+  }
 `;
 
 const PriceRow = styled.div`
@@ -181,15 +211,15 @@ const Price = styled.p`
 
 const Colors = styled.div`
   display: flex;
-  gap: 6px;
+  gap: 5px;
 `;
 
 const ColorDot = styled.span`
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: ${props => props.$color};
-  border: 1.5px solid rgba(0,0,0,0.08);
+  background: ${(p) => p.$color};
+  border: 1px solid rgba(0, 0, 0, 0.08);
 `;
 
 const fadeIn = keyframes`
@@ -208,174 +238,139 @@ const AddedFeedback = styled.div`
   color: #fff;
   z-index: 10;
   animation: ${fadeIn} 0.3s ease;
-
-  svg {
-    margin-bottom: 8px;
-  }
-
-  span {
-    font-size: 13px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
 `;
 
-const EmptyState = styled.div`
-  grid-column: 1 / -1;
+const CenterLink = styled.div`
   text-align: center;
-  padding: 80px 20px;
-  color: #999;
-
-  h3 {
-    font-size: 24px;
-    margin-bottom: 8px;
-    color: #555;
-  }
 `;
 
-const colorMap = {
-  'Black': '#1a1a1a',
-  'Midnight Blue': '#191970',
-  'Emerald': '#2d6a4f',
-  'Rose Pink': '#e8a0a0',
-  'Ivory': '#f5f0e8',
-  'Dusty Mauve': '#c9a0a0',
-  'Champagne': '#f7e7ce',
-  'Soft Peach': '#ffdab9',
-  'Burgundy': '#722f37',
-  'Midnight Black': '#0a0a0a',
-  'Blush': '#de98ab',
-  'Ocean Blue': '#4f86c6',
-  'Burnt Sienna': '#e97451',
-  'Tan': '#d2b48c',
-  'Gold & Pearl': '#d4af37',
-  'Silver & Pearl': '#c0c0c0',
-  'Camel': '#c19a6b',
-  'Charcoal': '#36454f',
-  'Cream': '#fffdd0',
-};
+const filters = ['All', ...CATEGORY_NAMES];
 
-export default function Products() {
+export default function Products({ featured = false }) {
   const [products, setProducts] = useState([]);
   const [activeFilter, setActiveFilter] = useState('All');
   const [addedId, setAddedId] = useState(null);
   const [hoveredId, setHoveredId] = useState(null);
   const { addToCart } = useCart();
-  const [searchParams] = useSearchParams();
 
   useEffect(() => {
-    axios.get('http://localhost:5000/api/products')
-      .then(res => setProducts(res.data))
-      .catch(err => console.error('Fetch error:', err));
+    axios
+      .get(apiEndpoint('/api/products'))
+      .then((res) => setProducts(res.data))
+      .catch(() => setProducts(fallbackProducts));
   }, []);
 
-  // Sync filter from URL params
-  useEffect(() => {
-    const cat = searchParams.get('category');
-    if (cat) {
-      setActiveFilter(cat);
-    }
-  }, [searchParams]);
+  const filtered =
+    activeFilter === 'All'
+      ? products
+      : products.filter((p) => p.category === activeFilter);
 
-  const filters = ['All', 'Handmade Dresses', "Women's Essentials"];
-  const filtered = activeFilter === 'All'
-    ? products
-    : products.filter(p => p.category === activeFilter);
+  const displayed = featured ? filtered.slice(0, 4) : filtered;
 
-  const addToCartHandler = useCallback((product) => {
-    addToCart({
-      product: product._id,
-      name: product.name,
-      image: product.images[0],
-      price: product.price,
-      qty: 1
-    });
-    setAddedId(product._id);
-    setTimeout(() => setAddedId(null), 1200);
-  }, [addToCart]);
+  const addToCartHandler = useCallback(
+    (product) => {
+      addToCart({
+        product: product._id,
+        name: product.name,
+        image: product.images[0],
+        price: product.price,
+        qty: 1,
+        size: product.sizes?.[0] || 'One Size',
+        color: product.colors?.[0] || 'Default',
+      });
+      setAddedId(product._id);
+      setTimeout(() => setAddedId(null), 1200);
+    },
+    [addToCart]
+  );
 
   return (
-    <Section id="products-section">
+    <Section id="products-section" $featured={featured}>
       <SectionHeader>
-        <Eyebrow>Shop Our Store</Eyebrow>
-        <Title>Featured Products</Title>
+        <Eyebrow>{featured ? 'Trending Now' : 'Shop Our Store'}</Eyebrow>
+        <Title>{featured ? 'Featured Products' : 'All Products'}</Title>
       </SectionHeader>
 
-      <FilterTabs>
-        {filters.map(f => (
-          <Tab
-            key={f}
-            $active={activeFilter === f}
-            onClick={() => setActiveFilter(f)}
-          >
-            {f}
-          </Tab>
-        ))}
-      </FilterTabs>
+      {!featured && (
+        <FilterTabs>
+          {filters.map((f) => (
+            <Tab key={f} $active={activeFilter === f} onClick={() => setActiveFilter(f)}>
+              {f}
+            </Tab>
+          ))}
+        </FilterTabs>
+      )}
 
       <Grid>
         <AnimatePresence mode="popLayout">
-          {filtered.length === 0 ? (
-            <EmptyState>
-              <h3>No products found</h3>
-              <p>Try selecting a different category.</p>
-            </EmptyState>
-          ) : (
-            filtered.map((product, i) => (
-              <Card
-                key={product._id}
-                layout
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.05, duration: 0.5 }}
-                onMouseEnter={() => setHoveredId(product._id)}
-                onMouseLeave={() => setHoveredId(null)}
-              >
-                <ImageWrapper>
-                  <CategoryBadge>{product.category}</CategoryBadge>
-                  <img src={product.images[0]} alt={product.name} loading="lazy" />
+          {displayed.map((product, i) => (
+            <Card
+              key={product._id}
+              layout
+              initial={{ opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ delay: i * 0.05, duration: 0.5 }}
+              onMouseEnter={() => setHoveredId(product._id)}
+              onMouseLeave={() => setHoveredId(null)}
+            >
+              <ImageLink to={`/product/${product._id}`} $featured={featured}>
+                <CategoryBadge>{product.category}</CategoryBadge>
+                <img src={product.images[0]} alt={product.name} loading="lazy" />
 
-                  <AnimatePresence>
-                    {hoveredId === product._id && (
-                      <QuickActions
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 10 }}
-                        transition={{ duration: 0.25 }}
+                <AnimatePresence>
+                  {hoveredId === product._id && (
+                    <QuickActions
+                      initial={{ opacity: 0, y: 16 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                    >
+                      <ActionBtn
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addToCartHandler(product);
+                        }}
                       >
-                        <ActionBtn $primary onClick={() => addToCartHandler(product)}>
-                          <ShoppingBag size={14} /> Add to Cart
-                        </ActionBtn>
-                      </QuickActions>
-                    )}
-                  </AnimatePresence>
-
-                  {addedId === product._id && (
-                    <AddedFeedback>
-                      <Check size={32} strokeWidth={2.5} />
-                      <span>Added to Cart</span>
-                    </AddedFeedback>
+                        <ShoppingBag size={13} /> Add
+                      </ActionBtn>
+                      <ViewBtn to={`/product/${product._id}`}>
+                        <Eye size={13} /> View
+                      </ViewBtn>
+                    </QuickActions>
                   )}
-                </ImageWrapper>
+                </AnimatePresence>
 
-                <Info>
-                  <ProductName>{product.name}</ProductName>
-                  <PriceRow>
-                    <Price>₹{product.price.toLocaleString('en-IN')}</Price>
-                    <Colors>
-                      {product.colors?.slice(0, 3).map(c => (
-                        <ColorDot key={c} $color={colorMap[c] || '#ccc'} title={c} />
-                      ))}
-                    </Colors>
-                  </PriceRow>
-                </Info>
-              </Card>
-            ))
-          )}
+                {addedId === product._id && (
+                  <AddedFeedback>
+                    <Check size={28} />
+                    <span style={{ fontSize: 12, letterSpacing: 2, marginTop: 8 }}>ADDED</span>
+                  </AddedFeedback>
+                )}
+              </ImageLink>
+
+              <Info>
+                <ProductName to={`/product/${product._id}`}>{product.name}</ProductName>
+                <PriceRow>
+                  <Price>₹{product.price.toLocaleString('en-IN')}</Price>
+                  <Colors>
+                    {product.colors?.slice(0, 3).map((c) => (
+                      <ColorDot key={c} $color={COLOR_MAP[c] || '#ccc'} title={c} />
+                    ))}
+                  </Colors>
+                </PriceRow>
+              </Info>
+            </Card>
+          ))}
         </AnimatePresence>
       </Grid>
+
+      {featured && (
+        <CenterLink>
+          <ViewAllLink to="/shop">
+            View All Products <ArrowRight size={16} />
+          </ViewAllLink>
+        </CenterLink>
+      )}
     </Section>
   );
 }
