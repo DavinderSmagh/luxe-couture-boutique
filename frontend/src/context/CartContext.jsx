@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useContext, useEffect } from 'react';
+import React, { createContext, useReducer, useContext, useEffect, useState } from 'react';
 import { getCartKey } from '../data/products';
 
 const CartContext = createContext();
@@ -75,6 +75,7 @@ const initialState = {
 
 export const CartProvider = ({ children }) => {
   const [state, dispatch] = useReducer(cartReducer, initialState);
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(state.cartItems));
@@ -120,6 +121,8 @@ export const CartProvider = ({ children }) => {
     <CartContext.Provider
       value={{
         state,
+        isCartOpen,
+        setIsCartOpen,
         addToCart,
         updateQty,
         removeFromCart,

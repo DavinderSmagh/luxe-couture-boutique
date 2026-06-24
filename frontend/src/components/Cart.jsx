@@ -278,8 +278,7 @@ const Variant = styled.p`
 `;
 
 export default function Cart() {
-  const { state: { cartItems }, updateQty, removeFromCart } = useCart();
-  const [isOpen, setIsOpen] = useState(true);
+  const { state: { cartItems }, updateQty, removeFromCart, isCartOpen, setIsCartOpen } = useCart();
   const navigate = useNavigate();
   const drawerRef = useRef(null);
 
@@ -290,13 +289,12 @@ export default function Cart() {
         handleClose();
       }
     };
-    if (isOpen) document.addEventListener('mousedown', handleClickOutside);
+    if (isCartOpen) document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isOpen, navigate]);
+  }, [isCartOpen]);
 
   const handleClose = () => {
-    setIsOpen(false);
-    setTimeout(() => navigate('/'), 350);
+    setIsCartOpen(false);
   };
 
   const updateQuantity = (item, qty) => {
@@ -306,13 +304,13 @@ export default function Cart() {
   const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.qty, 0);
 
   const checkoutHandler = () => {
-    setIsOpen(false);
+    setIsCartOpen(false);
     setTimeout(() => navigate('/checkout'), 350);
   };
 
   return (
     <AnimatePresence>
-      {isOpen && (
+      {isCartOpen && (
         <>
           <Overlay
             initial={{ opacity: 0 }}

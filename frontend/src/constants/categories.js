@@ -10,7 +10,7 @@ export const CATEGORIES = [
     id: 'kurtas-ethnic',
     name: 'Kurtas & Ethnic',
     description: 'Handcrafted ethnic elegance',
-    image: 'https://images.unsplash.com/photo-1585487000160-6ebcfceb0d44?w=800&q=80',
+    image: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80',
     featured: true,
   },
   {

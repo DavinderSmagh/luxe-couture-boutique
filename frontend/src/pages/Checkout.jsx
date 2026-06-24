@@ -201,7 +201,7 @@ export default function Checkout() {
             <Label>Phone Number</Label>
             <Input
               type="tel"
-              placeholder="+91 98765 43210"
+              placeholder="Enter your phone number here"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               required

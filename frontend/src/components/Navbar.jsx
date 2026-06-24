@@ -22,6 +22,8 @@ const Nav = styled.nav`
   justify-content: space-between;
   border-bottom: ${(p) => (p.$scrolled ? '1px solid rgba(0,0,0,0.06)' : 'none')};
   transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --nav-text-main: ${(p) => (p.$scrolled ? '#1a1a1a' : '#faf9f6')};
+  --nav-text-muted: ${(p) => (p.$scrolled ? '#555555' : 'rgba(250, 249, 246, 0.8)')};
 `;
 
 const Logo = styled(Link)`
@@ -29,7 +31,7 @@ const Logo = styled(Link)`
   font-size: 22px;
   letter-spacing: 3px;
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--nav-text-main);
   text-transform: uppercase;
   transition: opacity 0.3s;
   flex-shrink: 0;
@@ -55,13 +57,13 @@ const NavLinks = styled.div`
 
 const NavLink = styled(Link)`
   position: relative;
-  transition: color 0.3s;
-  color: #555;
+  transition: color 0.3s, opacity 0.3s;
+  color: var(--nav-text-muted);
   padding: 4px 0;
 
   &:hover,
   &.active {
-    color: #1a1a1a;
+    color: var(--nav-text-main);
   }
 
   &::after {
@@ -98,7 +100,7 @@ const DropdownTrigger = styled.button`
   font-weight: 500;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  color: #555;
+  color: var(--nav-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -107,7 +109,7 @@ const DropdownTrigger = styled.button`
   transition: color 0.3s;
 
   &:hover {
-    color: #1a1a1a;
+    color: var(--nav-text-main);
   }
 `;
 
@@ -154,9 +156,12 @@ const NavActions = styled.div`
   gap: 16px;
 `;
 
-const IconButton = styled(Link)`
+const IconButton = styled.button`
+  background: none;
+  border: none;
+  cursor: pointer;
   position: relative;
-  color: #1a1a1a;
+  color: var(--nav-text-main);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -171,7 +176,7 @@ const IconButton = styled(Link)`
 const SearchButton = styled.button`
   background: none;
   border: none;
-  color: #1a1a1a;
+  color: var(--nav-text-main);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -210,7 +215,7 @@ const Badge = styled.span`
 const HamburgerBtn = styled.button`
   background: none;
   border: none;
-  color: #1a1a1a;
+  color: var(--nav-text-main);
   cursor: pointer;
   display: none;
   padding: 4px;
@@ -285,6 +290,7 @@ const MobileDivider = styled.div`
 export default function Navbar() {
   const {
     state: { cartItems },
+    setIsCartOpen
   } = useCart();
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
   const [scrolled, setScrolled] = useState(false);
@@ -354,7 +360,7 @@ export default function Navbar() {
           <SearchButton aria-label="Search" onClick={() => setSearchOpen(true)}>
             <Search size={20} strokeWidth={1.5} />
           </SearchButton>
-          <IconButton to="/cart" aria-label="Shopping cart" id="cart-icon">
+          <IconButton onClick={() => setIsCartOpen(true)} aria-label="Shopping cart" id="cart-icon">
             <ShoppingBag size={20} strokeWidth={1.5} />
             {cartCount > 0 && <Badge $animate={badgeAnimate}>{cartCount}</Badge>}
           </IconButton>
@@ -386,7 +392,7 @@ export default function Navbar() {
             <MobileLink to="/collections">Collections</MobileLink>
             <MobileLink to="/about">About</MobileLink>
             <MobileLink to="/contact">Contact</MobileLink>
-            <MobileLink to="/cart">Cart ({cartCount})</MobileLink>
+            <MobileLink as="button" style={{background: 'none', border: 'none', cursor: 'pointer'}} onClick={() => { setMobileOpen(false); setIsCartOpen(true); }}>Cart ({cartCount})</MobileLink>
           </MobileMenu>
         )}
       </AnimatePresence>

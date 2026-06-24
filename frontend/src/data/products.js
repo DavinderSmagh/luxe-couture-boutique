@@ -60,7 +60,7 @@ export const fallbackProducts = [
     name: 'Embroidered Silk Kurta',
     description: 'Hand-embroidered silk kurta with intricate zari work. Perfect for festive occasions.',
     price: 6499,
-    images: ['https://images.unsplash.com/photo-1585487000160-6ebcfceb0d44?w=800&q=80'],
+    images: ['https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=800&q=80'],
     category: 'Kurtas & Ethnic',
     sizes: ['S', 'M', 'L', 'XL'],
     colors: ['Maroon', 'Gold', 'Ivory'],

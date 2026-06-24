@@ -274,7 +274,7 @@ export default function Footer() {
           </ContactItem>
           <ContactItem>
             <Mail size={16} />
-            <span>example@hgams.in</span>
+            <span>sardarniboutique@gmail.com</span>
           </ContactItem>
           <ContactItem>
             <Phone size={16} />
