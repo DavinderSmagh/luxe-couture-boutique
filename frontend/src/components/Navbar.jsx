@@ -28,8 +28,8 @@ const Nav = styled.nav`
 
 const Logo = styled(Link)`
   font-family: 'Playfair Display', serif;
-  font-size: 22px;
-  letter-spacing: 3px;
+  font-size: 18px;
+  letter-spacing: 1px;
   font-weight: 600;
   color: var(--nav-text-main);
   text-transform: uppercase;
@@ -226,31 +226,41 @@ const HamburgerBtn = styled.button`
   }
 `;
 
+const MobileOverlay = styled(motion.div)`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 1999;
+`;
+
 const MobileMenu = styled(motion.div)`
   position: fixed;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(250, 249, 246, 0.98);
-  backdrop-filter: blur(20px);
+  width: 320px;
+  max-width: 85vw;
+  background: #faf9f6;
   z-index: 2000;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  align-items: flex-start;
   gap: 8px;
   overflow-y: auto;
-  padding: 80px 24px 40px;
+  padding: 80px 32px 40px;
+  box-shadow: -8px 0 30px rgba(0, 0, 0, 0.1);
 `;
 
 const MobileLink = styled(Link)`
   font-family: 'Playfair Display', serif;
-  font-size: 28px;
+  font-size: 24px;
   color: #1a1a1a;
   letter-spacing: 2px;
   transition: color 0.3s;
   padding: 8px 0;
+  width: 100%;
+  text-align: left;
 
   &:hover {
     color: #b79447;
@@ -263,6 +273,8 @@ const MobileCategory = styled(Link)`
   letter-spacing: 1.5px;
   text-transform: uppercase;
   padding: 6px 0;
+  width: 100%;
+  text-align: left;
   transition: color 0.3s;
 
   &:hover {
@@ -332,18 +344,6 @@ export default function Navbar() {
             Shop
           </NavLink>
 
-          <DropdownWrap>
-            <DropdownTrigger>
-              Categories <ChevronDown size={14} />
-            </DropdownTrigger>
-            <DropdownMenu className="dropdown-menu">
-              {CATEGORIES.map((cat) => (
-                <Link key={cat.id} to={getCategoryLink(cat.name)}>
-                  {cat.name}
-                </Link>
-              ))}
-            </DropdownMenu>
-          </DropdownWrap>
 
           <NavLink to="/collections" className={isActive('/collections')}>
             Collections
@@ -372,28 +372,32 @@ export default function Navbar() {
 
       <AnimatePresence>
         {mobileOpen && (
-          <MobileMenu
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
+          <>
+            <MobileOverlay
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              onClick={() => setMobileOpen(false)}
+            />
+            <MobileMenu
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ type: 'spring', damping: 30, stiffness: 300 }}
+            >
             <MobileClose onClick={() => setMobileOpen(false)} aria-label="Close menu">
               <X size={28} strokeWidth={1.5} />
             </MobileClose>
             <MobileLink to="/">Home</MobileLink>
-            <MobileLink to="/shop">Shop All</MobileLink>
-            <MobileDivider />
-            {CATEGORIES.map((cat) => (
-              <MobileCategory key={cat.id} to={getCategoryLink(cat.name)}>
-                {cat.name}
-              </MobileCategory>
-            ))}
-            <MobileDivider />
+            <MobileLink to="/shop">Shop</MobileLink>
+
             <MobileLink to="/collections">Collections</MobileLink>
             <MobileLink to="/about">About</MobileLink>
             <MobileLink to="/contact">Contact</MobileLink>
-            <MobileLink as="button" style={{background: 'none', border: 'none', cursor: 'pointer'}} onClick={() => { setMobileOpen(false); setIsCartOpen(true); }}>Cart ({cartCount})</MobileLink>
+            <MobileLink as="button" style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: "'Playfair Display', serif", fontSize: '24px', color: '#1a1a1a', letterSpacing: '2px', padding: '8px 0' }} onClick={() => { setMobileOpen(false); setIsCartOpen(true); }}>Cart ({cartCount})</MobileLink>
           </MobileMenu>
+          </>
         )}
       </AnimatePresence>
 
