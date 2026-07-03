@@ -157,11 +157,43 @@ const SuccessMsg = styled(motion.div)`
 `;
 
 export default function Contact() {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    subject: '',
+    message: ''
+  });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    setIsSubmitting(true);
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (response.ok) {
+        setSubmitted(true);
+        setFormData({ name: '', email: '', subject: '', message: '' });
+        setTimeout(() => setSubmitted(false), 5000);
+      } else {
+        console.error('Failed to submit form');
+      }
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -208,22 +240,22 @@ export default function Contact() {
         <Form onSubmit={handleSubmit}>
           <FormGroup>
             <Label>Your Name</Label>
-            <Input type="text" placeholder="Full name" required />
+            <Input type="text" name="name" value={formData.name} onChange={handleChange} placeholder="Full name" required />
           </FormGroup>
           <FormGroup>
             <Label>Email</Label>
-            <Input type="email" placeholder="your@email.com" required />
+            <Input type="email" name="email" value={formData.email} onChange={handleChange} placeholder="your@email.com" required />
           </FormGroup>
           <FormGroup>
             <Label>Subject</Label>
-            <Input type="text" placeholder="Custom suit inquiry, order help..." required />
+            <Input type="text" name="subject" value={formData.subject} onChange={handleChange} placeholder="Custom suit inquiry, order help..." required />
           </FormGroup>
           <FormGroup>
             <Label>Message</Label>
-            <Textarea placeholder="Tell us how we can help..." required />
+            <Textarea name="message" value={formData.message} onChange={handleChange} placeholder="Tell us how we can help..." required />
           </FormGroup>
-          <SubmitBtn type="submit" whileTap={{ scale: 0.98 }}>
-            <Send size={16} /> Send Message
+          <SubmitBtn type="submit" disabled={isSubmitting} whileTap={!isSubmitting ? { scale: 0.98 } : {}}>
+            <Send size={16} /> {isSubmitting ? 'Sending...' : 'Send Message'}
           </SubmitBtn>
           {submitted && (
             <SuccessMsg initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

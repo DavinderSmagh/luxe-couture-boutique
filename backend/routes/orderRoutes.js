@@ -1,61 +1,29 @@
 const express = require('express');
 const router = express.Router();
-const Order = require('../models/order');
+const {
+  createOrder,
+  getOrderById,
+  getMyOrders,
+  getAllOrders,
+  updateOrderToPaid,
+  updateOrderToDelivered,
+} = require('../controllers/orderController');
+const { protect, admin } = require('../middleware/authMiddleware');
 
-// @desc    Create new order
-// @route   POST /api/orders
-// @access  Public (for now, assuming no auth yet)
-router.post('/', async (req, res) => {
-  try {
-    const {
-      user,
-      orderItems,
-      shippingAddress,
-      paymentMethod,
-      itemsPrice,
-      taxPrice,
-      shippingPrice,
-      totalPrice,
-    } = req.body;
+// Public routes
+router.post('/', createOrder);
 
-    if (orderItems && orderItems.length === 0) {
-      res.status(400).json({ message: 'No order items' });
-      return;
-    } else {
-      const order = new Order({
-        user,
-        orderItems,
-        shippingAddress,
-        paymentMethod,
-        itemsPrice,
-        taxPrice,
-        shippingPrice,
-        totalPrice,
-      });
+// User routes (authenticated)
+router.get('/my/orders', protect, getMyOrders);
 
-      const createdOrder = await order.save();
-      res.status(201).json(createdOrder);
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// Admin routes
+router.get('/', protect, admin, getAllOrders);
 
-// @desc    Get order by ID
-// @route   GET /api/orders/:id
-// @access  Public (for now)
-router.get('/:id', async (req, res) => {
-  try {
-    const order = await Order.findById(req.params.id);
+// Must be after /my/orders to avoid route conflict
+router.get('/:id', getOrderById);
 
-    if (order) {
-      res.json(order);
-    } else {
-      res.status(404).json({ message: 'Order not found' });
-    }
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
+// Admin status update routes
+router.put('/:id/pay', protect, admin, updateOrderToPaid);
+router.put('/:id/deliver', protect, admin, updateOrderToDelivered);
 
 module.exports = router;

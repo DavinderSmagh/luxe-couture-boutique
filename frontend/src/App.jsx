@@ -7,6 +7,8 @@ import Products from './components/Products';
 import CategoryShowcase from './components/CategoryShowcase';
 import Collections from './components/Collections';
 import About from './components/About';
+import { CartProvider } from './context/CartContext';
+import { AuthProvider } from './context/AuthContext';
 import Cart from './components/Cart';
 import Footer from './components/Footer';
 import Checkout from './pages/Checkout';
@@ -16,6 +18,7 @@ import Shop from './pages/Shop';
 import ProductDetail from './pages/ProductDetail';
 import PolicyPage from './pages/PolicyPage';
 import Contact from './pages/Contact';
+import LoginSignup from './pages/LoginSignup';
 import './App.css';
 
 function ScrollToTop() {
@@ -50,34 +53,39 @@ function App() {
   }, []);
 
   return (
-    <Router>
-      <ScrollToTop />
-      <Navbar />
-      <AppLayout>
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <>
-                <Hero />
-                <CategoryShowcase />
-                <Products featured />
-                <Collections compact />
-              </>
-            }
-          />
-          <Route path="/shop" element={<Shop />} />
-          <Route path="/product/:id" element={<ProductDetail />} />
-          <Route path="/collections" element={<Collections />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
-          <Route path="/policies/:slug" element={<PolicyPage />} />
-          <Route path="/checkout" element={<Checkout />} />
-          <Route path="/placeorder" element={<PlaceOrder />} />
-          <Route path="/order/:id" element={<OrderSuccess />} />
-        </Routes>
-      </AppLayout>
-    </Router>
+    <AuthProvider>
+      <CartProvider>
+        <Router>
+          <ScrollToTop />
+          <Navbar />
+          <AppLayout>
+            <Routes>
+              <Route
+                path="/"
+                element={
+                  <>
+                    <Hero />
+                    <CategoryShowcase />
+                    <Products featured />
+                    <Collections compact />
+                  </>
+                }
+              />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/collections" element={<Collections />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/login" element={<LoginSignup />} />
+              <Route path="/policies/:slug" element={<PolicyPage />} />
+              <Route path="/checkout" element={<Checkout />} />
+              <Route path="/placeorder" element={<PlaceOrder />} />
+              <Route path="/order/:id" element={<OrderSuccess />} />
+            </Routes>
+          </AppLayout>
+        </Router>
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import { Instagram, Facebook, Twitter, Send, MapPin, Mail, Phone } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { CATEGORIES, getCategoryLink } from '../constants/categories';
+import axios from 'axios';
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const FooterContainer = styled.footer`
   background: #1a1a1a;
@@ -201,11 +204,27 @@ const BottomLinks = styled.div`
 `;
 
 export default function Footer() {
+  const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault();
-    setSubscribed(true);
+    if (!email) return;
+    
+    setLoading(true);
+    setError('');
+    
+    try {
+      await axios.post(`${API_URL}/api/subscribe`, { email });
+      setSubscribed(true);
+      setEmail(''); // clear input
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to subscribe');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -261,12 +280,25 @@ export default function Footer() {
           </Description>
           <form onSubmit={handleSubscribe}>
             <InputGroup>
-              <NewsletterInput type="email" placeholder="Your email" required />
-              <SubscribeBtn type="submit" aria-label="Subscribe">
+              <NewsletterInput 
+                type="email" 
+                placeholder="Your email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                disabled={loading || subscribed}
+                required 
+              />
+              <SubscribeBtn 
+                type="submit" 
+                aria-label="Subscribe" 
+                disabled={loading || subscribed}
+                style={{ opacity: (loading || subscribed) ? 0.7 : 1 }}
+              >
                 <Send size={16} />
               </SubscribeBtn>
             </InputGroup>
             {subscribed && <SuccessText>Thank you for subscribing!</SuccessText>}
+            {error && <SuccessText style={{ color: '#d32f2f' }}>{error}</SuccessText>}
           </form>
           <ContactItem style={{ marginTop: 24 }}>
             <MapPin size={16} />

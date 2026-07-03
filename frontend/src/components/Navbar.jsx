@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import styled, { keyframes, css } from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShoppingBag, Menu, X, Search, ChevronDown } from 'lucide-react';
+import { ShoppingBag, Menu, X, Search, ChevronDown, User } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { CATEGORIES, getCategoryLink } from '../constants/categories';
@@ -360,6 +360,9 @@ export default function Navbar() {
           <SearchButton aria-label="Search" onClick={() => setSearchOpen(true)}>
             <Search size={20} strokeWidth={1.5} />
           </SearchButton>
+          <IconButton as={Link} to="/login" aria-label="Login/Signup">
+            <User size={20} strokeWidth={1.5} />
+          </IconButton>
           <IconButton onClick={() => setIsCartOpen(true)} aria-label="Shopping cart" id="cart-icon">
             <ShoppingBag size={20} strokeWidth={1.5} />
             {cartCount > 0 && <Badge $animate={badgeAnimate}>{cartCount}</Badge>}
@@ -395,6 +398,7 @@ export default function Navbar() {
             <MobileLink to="/collections">Collections</MobileLink>
             <MobileLink to="/about">About</MobileLink>
             <MobileLink to="/contact">Contact</MobileLink>
+            <MobileLink to="/login">Login / Signup</MobileLink>
             <MobileLink as="button" style={{ background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: "'Playfair Display', serif", fontSize: '24px', color: '#1a1a1a', letterSpacing: '2px', padding: '8px 0' }} onClick={() => { setMobileOpen(false); setIsCartOpen(true); }}>Cart ({cartCount})</MobileLink>
           </MobileMenu>
           </>
